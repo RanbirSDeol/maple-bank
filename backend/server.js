@@ -1,28 +1,25 @@
-const express = require('express');
-const db = require('./config/db');
+// server.js
+const express = require("express");
+const db = require("./config/db"); // Import the MySQL connection
 
 const app = express();
+const port = 3000;
 
-// Middleware
+// Middleware to parse JSON
 app.use(express.json());
 
-// Example Route
-app.get('/', (req, res) => {
-  res.send('Welcome to the Node.js and MySQL backend!');
+// Example route to test DB connection
+app.get("/", async (req, res) => {
+  try {
+    const [rows] = await db.execute("SELECT 1 AS test");
+    console.log("Database connection successful");
+    res.json(rows); // Return test result from DB
+  } catch (err) {
+    res.status(500).json({ message: "Database connection error", error: err });
+  }
 });
 
-// Test Database Connection
-app.get('/test-db', (req, res) => {
-  db.query('SELECT 1 + 1 AS solution', (err, results) => {
-    if (err) {
-      return res.status(500).send('Database query error');
-    }
-    res.send(`The solution is: ${results[0].solution}`);
-  });
-});
-
-// Start Server
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+// Start the server
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
 });
